@@ -1,6 +1,6 @@
 from flask import Blueprint, abort, render_template, request, redirect, url_for, flash
 from app import db
-from app.models import User, WorkoutLog, WellnessLog
+from app.models import User, WorkoutLog, WellnessLog, AthleteProfile
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, login_required, current_user, logout_user
 from datetime import datetime
@@ -28,11 +28,22 @@ def register():
             role=role)
         db.session.add(new_user)
         db.session.commit()
+    
+        #create athlete profile if role is athlete
+        if role == 'athlete':
+            sport = request.form.get('sport')
+            position = request.form.get('position')
+            coach_id = request.form.get('coach_id')  # Optional: Assign a coach if provided
+            athlete_profile = AthleteProfile(user_id=new_user.id, sport=sport, position=position, coach_id=int(coach_id) if coach_id else None)
+            db.session.add(athlete_profile)
+            db.session.commit()
+
         flash('Registration successful! Please log in.', 'success')
         return redirect(url_for('main.register'))
         
     #Get request
-    return render_template('register.html')
+    coaches = User.query.filter_by(role='coach').all()  # Fetch all coaches for the dropdown
+    return render_template('register.html', coaches=coaches)
 
 @main_bp.route('/login', methods=['GET', 'POST'])
 def login():
@@ -91,7 +102,12 @@ def athlete_dashboard():
 @login_required
 def coach_dashboard():
     # coach dashboard logic
-    return render_template('coach_dashboard.html')
+    if current_user.role != 'coach':
+        abort(403)  # cannot access if not a coach
+
+    #fetch all athletes for the coach
+    athletes = AthleteProfile.query.filter_by(coach_id=current_user.id).all()
+    return render_template('coach_dashboard.html', athletes=athletes)
     
 
 # Workout log routes

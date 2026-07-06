@@ -4,5 +4,33 @@
 <div class="container mt-4">
     <h2>Welcome, Coach {{ current_user.username }}!</h2>
     <p>You are logged in as a <strong>Coach</strong>.</p>
+
+    <!--table with athletes asigned to the coach-->
+
+    <h2>Your Athletes</h2>
+    {% if athletes %}
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Sport</th>
+                    <th>Position</th>
+                </tr>
+            </thead>
+            <tbody class="table-group-divider">
+                {% for athlete in athletes %}
+                <tr>
+                    <td>{{ athlete.user.username }}</td>
+                    <td>{{ athlete.user.email }}</td>
+                    <td>{{ athlete.sport }}</td>
+                    <td>{{ athlete.position }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No athletes assigned to you yet.</p>
+    {% endif %}
 </div>
 {% endblock %}

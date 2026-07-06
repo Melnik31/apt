@@ -18,6 +18,7 @@ class AthleteProfile(db.Model):
     age = db.Column(db.Integer, nullable=True)
     injury_history = db.Column(db.Text, nullable=True)
     coach_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)  # Link to coach
+    user = db.relationship('User', foreign_keys=[user_id], backref='athlete_profile')
 
 class WorkoutLog(db.Model):
     id = db.Column(db.Integer, primary_key=True)

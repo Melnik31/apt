@@ -24,7 +24,45 @@
                 <option value="athlete">Athlete</option>
             </select>
         </div>
+        <!--Only visible when athlete role is selected-->
+        <div id="coach-selection" class="mb-3" style="display: none;">
+            <div class="mb-3">
+                <label for="sport" class="form-label">Sport/Program</label>
+                <input type="text" class="form-control" id="sport" name="sport" placeholder="e.g., Basketball, Hockey, etc.">
+            </div>
+            <div class="mb-3">
+                <label for="position" class="form-label">Position</label>
+                <input type="text" class="form-control" id="position" name="position" placeholder="e.g., Forward, Defense, etc.">
+            </div>
+            <label for="coach_id" class="form-label">Select Coach</label>
+            <select class="form-select" id="coach_id" name="coach_id">
+                <option value="">--Select Coach--</option>
+                {% for coach in coaches %}
+                    <option value="{{ coach.id }}">{{ coach.username }}</option>
+                {% endfor %}
+            </select>
+        </div>
         <button type="submit" class="btn btn-primary">Register</button>
     </form>
 </div>
+
+<script>
+    document.getElementById('role').addEventListener('change', function() {
+        var coachSelection = document.getElementById('coach-selection');
+        var sportInput = document.getElementById('sport');
+        var positionInput = document.getElementById('position');
+        
+        if (this.value === 'athlete') {
+            coachSelection.style.display = 'block';
+            document.getElementById('coach_id').setAttribute('required', 'required');
+            sportInput.setAttribute('required', 'required');
+            positionInput.setAttribute('required', 'required');
+        } else {
+            coachSelection.style.display = 'none';
+            document.getElementById('coach_id').removeAttribute('required');
+            sportInput.removeAttribute('required');
+            positionInput.removeAttribute('required');
+        }
+    });
+</script>
 {% endblock %}
