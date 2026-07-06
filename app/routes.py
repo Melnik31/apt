@@ -1,8 +1,9 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from app import db
-from app.models import User
+from app.models import User, WorkoutLog
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, login_required, current_user, logout_user
+from datetime import datetime
 
 main_bp = Blueprint('main', __name__)
 
@@ -72,7 +73,14 @@ def dashboard():
 @login_required
 def athlete_dashboard():
     # athlete dashboard logic
-    return render_template('athlete_dashboard.html')
+    #check if user is athlete
+    if current_user.role != 'athlete':
+        flash('Access denied. Only athletes can access this page.', 'error')    
+        return redirect(url_for('main.dashboard'))
+    recent_workouts = WorkoutLog.query.filter_by(
+        athlete_id=current_user.id).order_by(WorkoutLog.date.desc()).limit(5).all()
+    
+    return render_template('athlete_dashboard.html', recent_workouts=recent_workouts)
 
 @main_bp.route('/coach/dashboard')
 @login_required
@@ -80,4 +88,63 @@ def coach_dashboard():
     # coach dashboard logic
     return render_template('coach_dashboard.html')
     
+
+# Workout log routes
+@main_bp.route('/athlete/workout_log', methods=['GET', 'POST'])
+@login_required
+def workout_log():
+    #check if user is athlete
+    if current_user.role != 'athlete':
+        flash('Access denied. Only athletes can log workouts.', 'error')    
+        return redirect(url_for('main.dashboard'))
+    
+    if request.method == 'POST':
+        # Process the workout log form submission
+        workout_type = request.form.get('workout_type')
+        notes = request.form.get('notes')
+        date_str = request.form.get('date')
+        duration_str = request.form.get('duration_minutes')
+        intensity_str = request.form.get('intensity')
+
+        # Validate and convert the form data
+        try:
+            duration_minutes = int(duration_str) if duration_str else 0
+            intensity = int(intensity_str) if intensity_str else 0
+
+            # Convert the form string (YYYY-MM-DD) into a Python datetime object
+            if date_str:
+                date_obj = datetime.strptime(date_str, '%Y-%m-%d')
+            else:
+                date_obj = datetime.utcnow()
+                
+        except ValueError:
+            flash('Please check your inputs. Duration and intensity must be integers, and date must be valid.', 'error')
+            return redirect(url_for('main.workout_log'))
+        
+        #validation for intensity and duration range
+        if intensity < 1 or intensity > 10:
+            flash('Intensity must be between 1 and 10.', 'error')
+            return redirect(url_for('main.workout_log'))
+
+        if duration_minutes <= 0:
+            flash('Duration must be a positive integer.', 'error')
+            return redirect(url_for('main.workout_log')) 
+        
+        # new workout log entry
+        new_log = WorkoutLog(
+            athlete_id=current_user.id,
+            workout_type=workout_type,
+            notes=notes,
+            duration_minutes=duration_minutes,
+            intensity=intensity,
+            date=date_obj
+        )
+        db.session.add(new_log)
+        db.session.commit()
+        flash('Workout log entry added successfully!', 'success')
+        return redirect(url_for('main.athlete_dashboard'))
+    
+
+    
+    return render_template('athlete/workout_log.html')
         

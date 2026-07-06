@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="container">
+        <h2>Workout Log</h2>
+        <form method="POST" action="{{ url_for('main.workout_log') }}">
+            <div class="mb-3">
+                <label for="date" class="form-label">Date</label>
+                <input type="date" class="form-control" id="date" name="date" required>
+            </div>
+            <div class="input-group mb-3">
+                <label for="workout_type" class="form-label">Workout Type</label>
+                <select class="form-select" id="workout_type" name="workout_type" required>
+                    <option value="" disabled selected>--Select Exercise--</option>
+                    <option value="cardio">Cardio</option>
+                    <option value="strength">Strength</option>
+                    <option value="sport">Sport-specific</option>
+                    <option value="recovery">Recovery</option>                
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="duration" class="form-label">Duration</label>
+                <input type="number" class="form-control" id="duration_minutes" name="duration_minutes" required>
+            </div>
+            <div class="mb-3">
+                <label for="intensity" class="form-label">Intensity</label>
+                <input type="number" class="form-control" id="intensity" name="intensity" min="1" max="10" required>
+            </div>
+            <div class="mb-3">
+                <label for="notes" class="form-label">Notes</label>
+                <textarea class="form-control" id="notes" name="notes"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+{% endblock %}
