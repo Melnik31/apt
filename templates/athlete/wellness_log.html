@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="container">
+        <h2>Wellness Log</h2>
+        <form method="POST" action="{{ url_for('main.wellness_log') }}">
+            <div class="mb-3">
+                <label for="date" class="form-label">Date</label>
+                <input type="date" class="form-control" id="date" name="date" required>
+            </div>
+            <div class="mb-3">
+                <label for="sleep_hours" class="form-label">Sleep Hours</label>
+                <input type="range" class="form-range" min="0" max="15" step="0.5" value="0" id="sleep_hours" name="sleep_hours" required>
+                <output for="sleep_hours" id="sleep_hours_output" aria-hidden="true"></output>
+            </div>
+            <div class="mb-3">
+                <label for="soreness" class="form-label">Soreness</label>
+                <input type="range" class="form-range" id="soreness" name="soreness" min="1" max="10" step="1" value="1" required>
+                <output for="soreness" id="soreness_output" aria-hidden="true"></output>
+            </div>
+            <div class="mb-3">
+                <label for="mood" class="form-lable">Mood</label>
+                <input type="range" class="form-range" id="mood" name="mood" min="1" max="10" step="1" value="1" required>
+                <output for="mood" id="mood_output" aria-hidden="true"></output>
+            </div>
+            <div class="mb-3">
+                <label for="resting_heart_rate" class="form-label">Resting Heart Rate</label>
+                <input type="number" class="form-control" id="resting_heart_rate" name="resting_heart_rate">
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+
+    <script>
+        const sleepHoursInput = document.getElementById('sleep_hours');
+        const sleepHoursOutput = document.getElementById('sleep_hours_output');
+
+        sleepHoursInput.addEventListener('input', function() {
+            sleepHoursOutput.value = sleepHoursInput.value;
+        });
+
+        // Initialize the output value
+        sleepHoursOutput.value = sleepHoursInput.value;
+
+        const sorenessInput = document.getElementById('soreness');
+        const sorenessOutput = document.getElementById('soreness_output');
+        sorenessInput.addEventListener('input', function() {
+            sorenessOutput.value = sorenessInput.value;
+        });
+        sorenessOutput.value = sorenessInput.value;
+
+        const moodInput = document.getElementById('mood');
+        const moodOutput = document.getElementById('mood_output');
+        moodInput.addEventListener('input', function() {
+            moodOutput.value = moodInput.value;
+        });
+        moodOutput.value = moodInput.value;
+    </script>
+{% endblock %}

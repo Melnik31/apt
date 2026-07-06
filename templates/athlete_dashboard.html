@@ -5,5 +5,7 @@
     <h2>Welcome, {{ current_user.username }}!</h2>
     <p>You are logged in as an <strong>Athlete</strong>.</p>
     <button class="btn btn-primary" onclick="window.location.href='{{ url_for('main.workout_log') }}'">Log Workout</button>
+    <button class="btn btn-primary" onclick="window.location.href='{{ url_for('main.wellness_log') }}'">Wellness Log</button>
+    
 </div>
 {% endblock %}
