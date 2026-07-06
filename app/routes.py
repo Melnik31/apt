@@ -4,6 +4,7 @@ from app.models import User, WorkoutLog, WellnessLog, AthleteProfile
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, login_required, current_user, logout_user
 from datetime import datetime
+from app.ml.acwr import ACWRCalculator
 
 main_bp = Blueprint('main', __name__)
 
@@ -107,6 +108,14 @@ def coach_dashboard():
 
     #fetch all athletes for the coach
     athletes = AthleteProfile.query.filter_by(coach_id=current_user.id).all()
+    for athlete in athletes:
+        # Calculate ACWR for each athlete
+        acute_load, chronic_load, acwr_ratio, risk_level = ACWRCalculator.calc_acwr(athlete.user_id)
+        athlete.acute_load = acute_load
+        athlete.chronic_load = chronic_load
+        athlete.acwr_ratio = acwr_ratio
+        athlete.risk_level = risk_level
+        
     return render_template('coach_dashboard.html', athletes=athletes)
     
 

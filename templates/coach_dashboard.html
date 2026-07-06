@@ -16,6 +16,10 @@
                     <th>Email</th>
                     <th>Sport</th>
                     <th>Position</th>
+                    <th>Acute Load (7 days)</th>
+                    <th>Chronic Load (28 days)</th>
+                    <th>ACWR Ratio</th>
+                    <th>Risk Level</th>
                 </tr>
             </thead>
             <tbody class="table-group-divider">
@@ -25,6 +29,19 @@
                     <td>{{ athlete.user.email }}</td>
                     <td>{{ athlete.sport }}</td>
                     <td>{{ athlete.position }}</td>
+                    <td>{{ athlete.acute_load }}</td>
+                    <td>{{ athlete.chronic_load }}</td>
+                    <td calss="fw-bold">{{ athlete.acwr_ratio }}</td>
+
+                    <!--Condition to display right badge based ob risk status-->
+                    <td>
+                        {% if athlete.risk_level == 'Low' %}
+                            <span class="badge bg-success">Low (Under Trained)</span>
+                        {% elif athlete.risk_level == 'Moderate' %}
+                            <span class="badge bg-warning text-dark">Moderate</span>
+                        {% elif athlete.risk_level == 'High' %}
+                            <span class="badge bg-danger">High risk of injury</span>
+                        {% endif %}
                 </tr>
                 {% endfor %}
             </tbody>
