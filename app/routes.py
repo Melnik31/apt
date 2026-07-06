@@ -189,9 +189,9 @@ def wellness_log():
         # Validate and convert the form data
         try:
             sleep_hours = float(sleep_hours_str) if sleep_hours_str else 0.0
-            soreness = int(sorness_str) if sorness_str else 0
-            mood = int(mood_str) if mood_str else 0
-            resting_heart_rate = int(rhr_str) if rhr_str else 0
+            soreness = int(sorness_str) if sorness_str else 1
+            mood = int(mood_str) if mood_str else 1
+            resting_heart_rate = int(rhr_str) if rhr_str else None
 
             # Convert the form string (YYYY-MM-DD) into a Python datetime object
             if date_str:
@@ -209,11 +209,11 @@ def wellness_log():
             return redirect(url_for('main.wellness_log'))
         
         #validate soreness and mood
-        if soreness < 0 or soreness > 10:
+        if soreness < 1 or soreness > 10:
             flash('Soreness must be between 0 and 10.', 'error')
             return redirect(url_for('main.wellness_log'))
         
-        if mood < 0 or mood > 10:
+        if mood < 1 or mood > 10:
             flash('Mood must be between 0 and 10.', 'error')
             return redirect(url_for('main.wellness_log'))
 

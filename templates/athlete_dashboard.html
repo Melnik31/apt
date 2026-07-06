@@ -4,6 +4,12 @@
 <div class="container mt-4">
     <h2>Welcome, {{ current_user.username }}!</h2>
     <p>You are logged in as an <strong>Athlete</strong>.</p>
+
+    <div class="container-fluid mt-4">
+        <a href="{{ url_for('main.workout_log') }}" class="btn btn-primary">Log Workout</a>
+        <a href="{{ url_for('main.wellness_log') }}" class="btn btn-success">Wellness Log</a>
+    </div>
+
     <h2>Recent Workouts</h2>
     {% if workout_logs %}
         <table class="table table-striped table-hover">
@@ -13,6 +19,7 @@
                     <th>Workout Type</th>
                     <th>Duration (minutes)</th>
                     <th>Intensity</th>
+                    <th>Training Load</th>
                     <th>Notes</th>
                 </tr>
             </thead>
@@ -23,6 +30,7 @@
                     <td>{{ log.workout_type }}</td>
                     <td>{{ log.duration_minutes }}</td>
                     <td>{{ log.intensity }}</td>
+                    <td>{{ log.training_load }}</td>
                     <td>{{ log.notes }}</td>
                 </tr>
                 {% endfor %}
@@ -59,10 +67,7 @@
         <p>No recent wellness logs.</p>
     {% endif %}
 
-    <div class="container-fluid mt-4">
-        <a href="{{ url_for('main.workout_log') }}" class="btn btn-primary">Log Workout</a>
-        <a href="{{ url_for('main.wellness_log') }}" class="btn btn-success">Wellness Log</a>
-    </div>
+    
     
 </div>
 {% endblock %}
