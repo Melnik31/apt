@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, abort, render_template, request, redirect, url_for, flash
 from app import db
 from app.models import User, WorkoutLog, WellnessLog
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -75,12 +75,17 @@ def athlete_dashboard():
     # athlete dashboard logic
     #check if user is athlete
     if current_user.role != 'athlete':
-        flash('Access denied. Only athletes can access this page.', 'error')    
-        return redirect(url_for('main.dashboard'))
-    recent_workouts = WorkoutLog.query.filter_by(
-        athlete_id=current_user.id).order_by(WorkoutLog.date.desc()).limit(5).all()
+        abort(403)  # cannot access if not an athlete
+
+    # Fetch recent workouts for the athlete
+    workout_logs = WorkoutLog.query.filter_by(athlete_id=current_user.id).order_by(WorkoutLog.date.desc()).limit(7).all()
+
+    #fetch recent wellness logs for the athlete
+    wellness_logs = WellnessLog.query.filter_by(athlete_id=current_user.id).order_by(WellnessLog.date.desc()).limit(7).all()
+
+
     
-    return render_template('athlete_dashboard.html', recent_workouts=recent_workouts)
+    return render_template('athlete_dashboard.html', workout_logs=workout_logs, wellness_logs=wellness_logs)
 
 @main_bp.route('/coach/dashboard')
 @login_required
