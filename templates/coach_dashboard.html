@@ -37,11 +37,14 @@
                     <td>
                         {% if athlete.risk_level == 'Low' %}
                             <span class="badge bg-success">Low (Under Trained)</span>
+                        {% elif athlete.risk_level == 'Optimal' %}
+                            <span class="badge bg-primary">Optimal</span>
                         {% elif athlete.risk_level == 'Moderate' %}
                             <span class="badge bg-warning text-dark">Moderate</span>
                         {% elif athlete.risk_level == 'High' %}
                             <span class="badge bg-danger">High risk of injury</span>
                         {% endif %}
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>

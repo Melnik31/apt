@@ -58,11 +58,11 @@ class ACWRCalculator:
 
     @staticmethod
     def get_risk_level(ratio):
-        if ratio < 0.8:
+        if ratio <= 0.8:
             return "Low"
         elif 0.8 <= ratio <= 1.3:
             return "Optimal"
-        elif 1.3 < ratio <= 1.5:
+        elif 1.3 <= ratio <= 1.5:
             return "Moderate"
         else:
             return "High"

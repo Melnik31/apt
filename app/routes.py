@@ -3,8 +3,10 @@ from app import db
 from app.models import User, WorkoutLog, WellnessLog, AthleteProfile
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, login_required, current_user, logout_user
-from datetime import datetime
+from datetime import datetime, timedelta
 from app.ml.acwr import ACWRCalculator
+import pandas as pd
+import json
 
 main_bp = Blueprint('main', __name__)
 
@@ -95,6 +97,51 @@ def athlete_dashboard():
     #fetch recent wellness logs for the athlete
     wellness_logs = WellnessLog.query.filter_by(athlete_id=current_user.id).order_by(WellnessLog.date.desc()).limit(7).all()
 
+    # time series data for acwr visualization
+    today = datetime.now().date()
+    start_date = today - timedelta(days=28)
+
+    # fetch workout logs for the last 28 days
+    chart_logs = WorkoutLog.query.filter(
+        WorkoutLog.athlete_id == current_user.id,
+        WorkoutLog.date >= start_date,
+        WorkoutLog.date <= today
+    ).all()
+
+    #arrays if user has no logs for the last 28 days
+    chart_labels = []
+    acwr_values = []
+    chronic_values = []
+
+    #dataframe for acwr calculation
+    data = [{
+        'date': pd.to_datetime(log.date),
+        'training_load': log.training_load,
+    } for log in chart_logs]
+
+    df = pd.DataFrame(data)
+    df = df.groupby('date').sum().reset_index()
+
+    #calc historical acwr values for the last 28 days
+    df['acute_roll'] = df['training_load'].rolling(window=7, min_periods=1).mean()
+    df['chronic_roll'] = df['training_load'].rolling(window=28, min_periods=1).mean()
+
+    # convert pandas series to lists for charting
+    chart_labels = [dt.strftime('%Y-%m-%d') for dt in df['date']]
+    acute_values = df['acute_roll'].round(1).tolist()
+    chronic_values = df['chronic_roll'].round(1).tolist()
+
+    return render_template(
+        'athlete_dashboard.html', 
+        workout_logs=workout_logs, 
+        wellness_logs=wellness_logs,
+        chart_labels=json.dumps(chart_labels),
+        acute_values=json.dumps(acute_values),
+        chronic_values=json.dumps(chronic_values)
+    )
+
+
+
 
     
     return render_template('athlete_dashboard.html', workout_logs=workout_logs, wellness_logs=wellness_logs)
@@ -115,7 +162,7 @@ def coach_dashboard():
         athlete.chronic_load = chronic_load
         athlete.acwr_ratio = acwr_ratio
         athlete.risk_level = risk_level
-        
+
     return render_template('coach_dashboard.html', athletes=athletes)
     
 
