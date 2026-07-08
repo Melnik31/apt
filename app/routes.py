@@ -110,26 +110,32 @@ def athlete_dashboard():
 
     #arrays if user has no logs for the last 28 days
     chart_labels = []
-    acwr_values = []
+    acute_values = []
     chronic_values = []
 
     #dataframe for acwr calculation
-    data = [{
-        'date': pd.to_datetime(log.date),
-        'training_load': log.training_load,
-    } for log in chart_logs]
+    if chart_logs:
+        data = [{
+            'date': pd.to_datetime(log.date),
+            'training_load': log.training_load,
+        } for log in chart_logs]
 
-    df = pd.DataFrame(data)
-    df = df.groupby('date').sum().reset_index()
+        df = pd.DataFrame(data)
+        df = df.groupby('date').sum().reset_index()
 
-    #calc historical acwr values for the last 28 days
-    df['acute_roll'] = df['training_load'].rolling(window=7, min_periods=1).mean()
-    df['chronic_roll'] = df['training_load'].rolling(window=28, min_periods=1).mean()
 
-    # convert pandas series to lists for charting
-    chart_labels = [dt.strftime('%Y-%m-%d') for dt in df['date']]
-    acute_values = df['acute_roll'].round(1).tolist()
-    chronic_values = df['chronic_roll'].round(1).tolist()
+        all_dates = pd.date_range(start=start_date, end=today).normalize()
+        df = df.set_index('date').reindex(all_dates, fill_value=0).reset_index()
+        df.rename(columns={'index': 'date'}, inplace=True)
+
+        # Rolling averages
+        df['acute_roll'] = df['training_load'].rolling(window=7, min_periods=1).mean()
+        df['chronic_roll'] = df['training_load'].rolling(window=28, min_periods=1).mean()
+
+        # convert pandas series to lists for charting
+        chart_labels = [dt.strftime('%Y-%m-%d') for dt in df['date']]
+        acute_values = df['acute_roll'].round(1).tolist()
+        chronic_values = df['chronic_roll'].round(1).tolist()
 
     return render_template(
         'athlete_dashboard.html', 
@@ -141,10 +147,6 @@ def athlete_dashboard():
     )
 
 
-
-
-    
-    return render_template('athlete_dashboard.html', workout_logs=workout_logs, wellness_logs=wellness_logs)
 
 @main_bp.route('/coach/dashboard')
 @login_required

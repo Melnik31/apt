@@ -7,7 +7,7 @@ from app.models import User, WorkoutLog, WellnessLog
 app = create_app()
 
 with app.app_context():
-    print("🧹 Targetting 'John Test' and removing old conflicting records...")
+    print("Targetting 'John Test' and removing old conflicting records...")
     athlete = User.query.filter_by(username='John Test').first()
 
     if athlete:
@@ -16,10 +16,10 @@ with app.app_context():
         WellnessLog.query.filter_by(athlete_id=athlete.id).delete()
         db.session.commit()
 
-        # Anchoring to July 6, 2026 to align with your dashboard view
-        today = datetime(2026, 7, 6).date()
+        
+        today = datetime.now().date()
 
-        print("📈 Generating a highly sustainable 28-day progressive training loop...")
+        print("Generating a 28-day progressive training loop")
         for i in range(28, -1, -1):
             log_date = today - timedelta(days=i)
             
@@ -50,6 +50,6 @@ with app.app_context():
             db.session.add(wellness)
 
         db.session.commit()
-        print("🚀 Success! Balanced baseline training timeline successfully committed.")
+        print("Success")
     else:
-        print("❌ Error: Could not find an athlete named 'John Test'")
+        print("Error")
