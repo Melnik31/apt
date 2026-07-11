@@ -15,6 +15,7 @@ def create_app():
     # Initialize extensions
     db.init_app(app)
     login_manager.init_app(app)
+    login_manager.login_view = "main.login"
 
     #load user from db
     from app.models import User
@@ -26,5 +27,9 @@ def create_app():
     # Register blueprints
     from app.routes import main_bp
     app.register_blueprint(main_bp)
+    
+    @app.route('/test')
+    def test():
+        return('Works!')
 
     return app
