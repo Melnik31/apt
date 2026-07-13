@@ -25,8 +25,10 @@ class ACWRCalculator:
         df = pd.DataFrame(data)
         df = df.groupby('date').sum().reset_index()
 
+
         # Normalize BEFORE reindex
         df['date'] = df['date'].dt.normalize()
+        df = df.groupby('date').sum().reset_index()
         all_dates = pd.date_range(start=start_date, end=today).normalize()
 
         df = df.set_index('date').reindex(all_dates, fill_value=0).reset_index()

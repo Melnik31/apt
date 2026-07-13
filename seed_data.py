@@ -9,6 +9,8 @@ app = create_app()
 
 with app.app_context():
 
+    db.create_all()
+
     # Clear previous histories so the calculations remain clean
     WellnessLog.query.delete()
     WorkoutLog.query.delete()

@@ -123,6 +123,7 @@ def athlete_dashboard():
         df = pd.DataFrame(data)
         df = df.groupby('date').sum().reset_index()
         df['date'] = df['date'].dt.normalize()
+        df = df.groupby('date').sum().reset_index()
 
 
         all_dates = pd.date_range(start=start_date, end=today).normalize()
